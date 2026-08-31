@@ -2,10 +2,16 @@
 #
 # motion_axes: the two axes the toolhead itself travels along (the axes the
 #   mounted tracker actually moves in). bed_axis is the axis the bed moves on
-#   instead, and is not part of the traced benchmark path.
+#   instead, and is not part of the traced benchmark path — its build_volume
+#   entry is for reference only and is never range-checked by the generator.
 # build_volume: full machine limits in mm, per docs/adding_printers.md.
-# default_margin: mm kept clear of the physical travel limits on every side
-#   of motion_axes ranges, so the toolhead never touches an endstop.
+# default_span: the traced box's edge length (mm) used when a motion axis's
+#   --*-range flag is omitted. All shipped files trace the same 178mm box
+#   (the smallest supported printer, A1 mini's 180mm bed, minus 1mm margin
+#   on each side) centered inside whatever build_volume the printer has —
+#   default range per axis = ((build_volume - default_span) / 2, build_volume - that).
+# min_margin: mm a requested range should keep clear of the physical travel
+#   limit; a tighter request still runs but prints a warning.
 # max_speed_mm_s / max_accel_mm_s2: hard ceiling enforced by the generator;
 #   requests above these are rejected rather than clamped.
 
@@ -14,8 +20,40 @@ a1_mini:
   motion_axes: [X, Z]
   bed_axis: Y
   build_volume: {X: 180, Y: 180, Z: 180}
-  default_margin: 1
+  default_span: 178
+  min_margin: 1
   max_speed_mm_s: 500
   max_accel_mm_s2: 10000
   start_template: templates/a1_mini/start.gcode
   end_template: templates/a1_mini/end.gcode
+
+x1c:
+  display_name: "Bambu Lab X1 Carbon"
+  motion_axes: [X, Y]
+  bed_axis: Z
+  # X/Y confirmed from the shipped file's own coordinates (41-219, 51-229 =
+  # margin (260-178)/2=41 and (280-178)/2=51). Z is bed-lift, not traced by
+  # this benchmark, so its build height is a placeholder and unverified —
+  # it never affects generator output.
+  build_volume: {X: 260, Y: 280, Z: 256}
+  default_span: 178
+  min_margin: 1
+  max_speed_mm_s: 500
+  max_accel_mm_s2: 10000
+  start_template: templates/x1c/start.gcode
+  end_template: templates/x1c/end.gcode
+
+h2d:
+  display_name: "Bambu Lab H2D"
+  motion_axes: [X, Y]
+  bed_axis: Z
+  # X/Y confirmed from the shipped file's own coordinates (61-239 on both =
+  # margin (300-178)/2=61). Z build height is an unverified placeholder,
+  # same caveat as x1c above.
+  build_volume: {X: 300, Y: 300, Z: 300}
+  default_span: 178
+  min_margin: 1
+  max_speed_mm_s: 500
+  max_accel_mm_s2: 10000
+  start_template: templates/h2d/start.gcode
+  end_template: templates/h2d/end.gcode

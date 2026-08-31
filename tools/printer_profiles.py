@@ -17,7 +17,8 @@ class PrinterProfile:
     motion_axes: tuple[str, str]
     bed_axis: str
     build_volume: dict[str, float]
-    default_margin: float
+    default_span: float
+    min_margin: float
     max_speed_mm_s: float
     max_accel_mm_s2: float
     start_template: Path
@@ -42,7 +43,8 @@ def load_profile(printer_id: str, profiles_file: Path = PROFILES_FILE) -> Printe
         motion_axes=tuple(entry["motion_axes"]),
         bed_axis=entry["bed_axis"],
         build_volume=entry["build_volume"],
-        default_margin=float(entry["default_margin"]),
+        default_span=float(entry["default_span"]),
+        min_margin=float(entry["min_margin"]),
         max_speed_mm_s=float(entry["max_speed_mm_s"]),
         max_accel_mm_s2=float(entry["max_accel_mm_s2"]),
         start_template=profiles_file.parent / entry["start_template"],

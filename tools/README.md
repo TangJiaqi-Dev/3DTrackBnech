@@ -4,10 +4,12 @@ Generates a 3DTrackBench benchmark `.gcode` file with an adjustable travel
 range and speed range, instead of the fixed 180x180mm / F6000-F30000 ranges
 baked into the files under `/Materials`.
 
-Currently supports the **Bambu Lab A1 mini** only (`--printer a1_mini`).
-Other printers use a different toolhead motion plane (see
-`printer_profiles.yaml`) and need their own profile before they can be
-generated this way.
+Supports **A1 mini** (`a1_mini`), **X1 Carbon** (`x1c`), and **H2D** (`h2d`)
+— see `printer_profiles.yaml`. A1 mini's toolhead moves in X/Z (Y is the
+bed); X1C and H2D are CoreXY and move in X/Y (Z only lifts the bed), so
+their range flags are `--x-range`/`--y-range` instead. Adding another
+printer means adding a profile entry plus a `templates/<id>/{start,end}.gcode`
+pair extracted from a real sliced file for that machine — no code changes.
 
 ## Setup
 
@@ -33,12 +35,13 @@ python tools/gcode_generator.py --printer a1_mini \
 ```
 
 Flags:
-- `--printer` — printer id from `printer_profiles.yaml` (default `a1_mini`).
+- `--printer` — printer id from `printer_profiles.yaml`: `a1_mini`, `x1c`,
+  or `h2d` (default `a1_mini`).
 - `--x-range MIN MAX` / `--y-range MIN MAX` / `--z-range MIN MAX` — travel
-  range in mm for whichever axes the printer's toolhead moves in (the A1
-  mini uses X/Z; Y is the bed and isn't part of the traced path). Omit an
-  axis to use the printer's full build volume minus its default safety
-  margin.
+  range in mm for whichever two axes the printer's toolhead actually moves
+  in; passing a range for its bed axis (Y on a1_mini, Z on x1c/h2d) is
+  rejected with an error. Omit an axis to center the shipped files' default
+  178mm box inside that printer's build volume.
 - `--speed-range START END` — feedrate range in mm/min (G-code `F` units,
   e.g. `6000` = 100 mm/s) for the `speed_sweep` phase specifically.
 - `--speed-step` — `speed_sweep`'s feedrate step size (default `3000`).
