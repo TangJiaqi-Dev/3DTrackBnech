@@ -53,6 +53,7 @@ The analysis pipeline quantifies:
 1.  **Printer Stabilization:** Place the printer on a vibration-free platform.
 2.  **Load G-code:** Copy the specific G-code files for your printer model to a microSD card or USB drive.
     > **CRITICAL:** Only run G-code generated specifically for your printer model. Mismatched G-code may cause hardware failure.
+    > Need a different travel range or feedrate than the shipped file? See [Generating a Custom Benchmark File](#generating-a-custom-benchmark-file) below instead of editing a `.gcode` file by hand.
 3.  **Run Placement Script:** Execute `placement.gcode`. This moves the extruder to the center of the tracking volume.
 4.  **Align Tracker:** Position the NDI optical tracker perpendicular to the print head at a distance so that the marker is detected in the middle of the NDI standard volume (the smaller box)
 
@@ -66,6 +67,25 @@ The analysis pipeline quantifies:
 4.  **Rerun:** Run the sequence and recording two more times, to end up with 3 measurements.
 5.  **Upload the results:** Forward the final results to the PI at `hizirwan.salim@surf.nl
 
+---
+
+# Generating a Custom Benchmark File
+
+The files under `/Materials` trace a fixed 178mm box at a fixed speed sweep. If you need a
+different travel range or feedrate — e.g. to test a smaller working volume, or to check
+tracking at a narrower speed band — `tools/gcode_generator.py` generates a new `.gcode`
+file with those parameters instead of editing one by hand.
+
+```
+pip install pyyaml
+python tools/gcode_generator.py --printer a1_mini --x-range 40 140 --z-range 40 140 --out out.gcode
+```
+
+Supports `a1_mini`, `x1c`, and `h2d` (`--printer`). Requested ranges/speeds are validated
+against each printer's physical limits in `printer_profiles.yaml` and rejected if unsafe.
+See [tools/README.md](tools/README.md) for the full flag reference.
+
+---
 
 Big thanks for testing 3DTrackBench! Your data is essential for validating this framework. If you run into any issues or have ideas for improvement, don't hesitate to reach out. If you would like to see the results of your own dataset, use the tooling we made below.
 
