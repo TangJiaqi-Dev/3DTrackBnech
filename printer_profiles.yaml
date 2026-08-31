@@ -1,0 +1,21 @@
+# Registry of printers supported by tools/gcode_generator.py.
+#
+# motion_axes: the two axes the toolhead itself travels along (the axes the
+#   mounted tracker actually moves in). bed_axis is the axis the bed moves on
+#   instead, and is not part of the traced benchmark path.
+# build_volume: full machine limits in mm, per docs/adding_printers.md.
+# default_margin: mm kept clear of the physical travel limits on every side
+#   of motion_axes ranges, so the toolhead never touches an endstop.
+# max_speed_mm_s / max_accel_mm_s2: hard ceiling enforced by the generator;
+#   requests above these are rejected rather than clamped.
+
+a1_mini:
+  display_name: "Bambu Lab A1 mini"
+  motion_axes: [X, Z]
+  bed_axis: Y
+  build_volume: {X: 180, Y: 180, Z: 180}
+  default_margin: 1
+  max_speed_mm_s: 500
+  max_accel_mm_s2: 10000
+  start_template: templates/a1_mini/start.gcode
+  end_template: templates/a1_mini/end.gcode
